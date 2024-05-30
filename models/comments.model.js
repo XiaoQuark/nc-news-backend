@@ -17,8 +17,13 @@ exports.selectCommentsByArticleId = (article_id) => {
         });
 };
 
-exports.insertComment = (article_id, username, body) => {
-    // console.log(article_id, username, body, "model");
+exports.insertCommentByArticleId = (article_id, username, body) => {
+    if (!body || body === "") {
+        return Promise.reject({
+            status: 400,
+            msg: "400: Required Key Missing",
+        });
+    }
     return db
         .query("SELECT username FROM users WHERE username = $1;", [username])
         .then(({ rows }) => {
@@ -28,12 +33,25 @@ exports.insertComment = (article_id, username, body) => {
                     msg: "404: User Not Found",
                 });
             }
-            return db.query(
-                "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;",
-                [article_id, username, body]
-            );
-        })
-        .then(({ rows }) => {
-            return rows[0];
+            return db
+                .query("SELECT * FROM articles WHERE article_id = $1;", [
+                    article_id,
+                ])
+                .then(({ rows }) => {
+                    if (rows.length === 0) {
+                        return Promise.reject({
+                            status: 404,
+                            msg: "404: Not Found",
+                        });
+                    }
+                    return db
+                        .query(
+                            "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;",
+                            [article_id, username, body]
+                        )
+                        .then(({ rows }) => {
+                            return rows[0];
+                        });
+                });
         });
 };
