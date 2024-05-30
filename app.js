@@ -4,7 +4,10 @@ const {
     getArticles,
     getArticleById,
 } = require("./controllers/articles.controller");
-const { getCommentsByArticleId } = require("./controllers/comments.controller");
+const {
+    getCommentsByArticleId,
+    postComment,
+} = require("./controllers/comments.controller");
 const express = require("express");
 const app = express();
 const endpoints = require("./endpoints.json");
@@ -21,9 +24,14 @@ app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
+app.post("/api/articles/:article_id/comments", postComment);
+
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
         res.status(400).send({ msg: "400: Bad Request" });
+    }
+    if (err.code === "23502") {
+        res.status(400).send({ msg: "400: Required Key Missing" });
     } else {
         next(err);
     }
