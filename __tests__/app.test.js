@@ -91,7 +91,7 @@ describe("GET /api/articles/:article_id", () => {
                 });
             });
     });
-    test("should respond with a 404 error when passed a non-existent article_id", () => {
+    test("should respond with a 404 error when passed a valid but non-existent article_id", () => {
         return request(app)
             .get("/api/articles/999")
             .expect(404)
@@ -102,6 +102,44 @@ describe("GET /api/articles/:article_id", () => {
     test("should respond with a 400 error when passed a non valid id", () => {
         return request(app)
             .get("/api/articles/not-an-id")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("400: Bad Request");
+            });
+    });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+    test("should respond with an array of comment objects for the given article_id with specific properties", () => {
+        return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.comments.length).toBe(11);
+                expect(body.comments).toBeSortedBy("created_at", {
+                    descending: true,
+                });
+                body.comments.forEach((comment) => {
+                    expect(typeof comment.comment_id).toBe("number");
+                    expect(typeof comment.votes).toBe("number");
+                    expect(typeof comment.created_at).toBe("string");
+                    expect(typeof comment.author).toBe("string");
+                    expect(typeof comment.body).toBe("string");
+                    expect(typeof comment.article_id).toBe("number");
+                });
+            });
+    });
+    test("should respond with a 404 error when passed a valid but non-existent article_id", () => {
+        return request(app)
+            .get("/api/articles/999/comments")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("404: Not Found");
+            });
+    });
+    test("should respond with a 400 error when passed a non valid id", () => {
+        return request(app)
+            .get("/api/articles/not-an-id/comments")
             .expect(400)
             .then(({ body }) => {
                 expect(body.msg).toBe("400: Bad Request");
