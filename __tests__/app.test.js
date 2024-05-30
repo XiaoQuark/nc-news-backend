@@ -184,6 +184,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     test("should respond with a 200 error when the comment has no body", () => {
         const requestBody = {
             username: "icellusedkars",
+            body: "",
         };
         return request(app)
             .post("/api/articles/1/comments")
@@ -194,8 +195,79 @@ describe("POST /api/articles/:article_id/comments", () => {
             });
     });
     test("should respond with a 404 error when passed a valid but non-existent article_id", () => {
+        const requestBody = {
+            username: "icellusedkars",
+            body: "This is a test comment",
+        };
         return request(app)
-            .get("/api/articles/999/comments")
+            .post("/api/articles/999/comments")
+            .send(requestBody)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("404: Not Found");
+            });
+    });
+    test("should respond with a 400 error when passed a non valid id", () => {
+        const requestBody = {
+            username: "icellusedkars",
+            body: "This is a test comment",
+        };
+        return request(app)
+            .post("/api/articles/not-an-id/comments")
+            .send(requestBody)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("400: Bad Request");
+            });
+    });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+    test("should respond with the updated article object when the newVote amount is positive", () => {
+        const newVote = 100;
+        const requestBody = { inc_votes: newVote };
+        return request(app)
+            .patch("/api/articles/1")
+            .send(requestBody)
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.article).toMatchObject({
+                    author: "butter_bridge",
+                    title: "Living in the shadow of a great man",
+                    article_id: 1,
+                    body: "I find this existence challenging",
+                    topic: "mitch",
+                    created_at: "2020-07-09T19:11:00.000Z",
+                    votes: 200,
+                    article_img_url:
+                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                });
+            });
+    });
+    test("should respond with the updated article object when the newVote amount is negative", () => {
+        const newVote = -200;
+        const requestBody = { inc_votes: newVote };
+        return request(app)
+            .patch("/api/articles/1")
+            .send(requestBody)
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.article).toMatchObject({
+                    author: "butter_bridge",
+                    title: "Living in the shadow of a great man",
+                    article_id: 1,
+                    body: "I find this existence challenging",
+                    topic: "mitch",
+                    created_at: "2020-07-09T19:11:00.000Z",
+                    votes: -100,
+                    article_img_url:
+                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                });
+            });
+    });
+    test("should respond with a 404 error when passed a valid but non-existent article_id", () => {
+        return request(app)
+            .patch("/api/articles/999")
             .expect(404)
             .then(({ body }) => {
                 expect(body.msg).toBe("404: Not Found");
@@ -203,7 +275,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     });
     test("should respond with a 400 error when passed a non valid id", () => {
         return request(app)
-            .get("/api/articles/not-an-id/comments")
+            .patch("/api/articles/not-an-id")
             .expect(400)
             .then(({ body }) => {
                 expect(body.msg).toBe("400: Bad Request");
