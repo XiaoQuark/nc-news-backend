@@ -282,3 +282,25 @@ describe("PATCH /api/articles/:article_id", () => {
             });
     });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+    test("should respond with a status 204 and no content", () => {
+        return request(app).delete("/api/comments/2").expect(204);
+    });
+    test("should respond with a status 400 when passed an invalid comment ID", () => {
+        return request(app)
+            .delete("/api/comments/not-an-id")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("400: Bad Request");
+            });
+    });
+    test("should respond with a status 404 when passed a valid but non-existent comment ID", () => {
+        return request(app)
+            .delete("/api/comments/999")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("404: Comment Not Found");
+            });
+    });
+});
