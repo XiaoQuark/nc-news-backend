@@ -265,6 +265,17 @@ describe("PATCH /api/articles/:article_id", () => {
                 });
             });
     });
+    test("should respond with a 400 error when passed a non valid request", () => {
+        const newVote = "word";
+        const requestBody = { inc_votes: newVote };
+        return request(app)
+            .patch("/api/articles/1")
+            .send(requestBody)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("400: Bad Request");
+            });
+    });
     test("should respond with a 404 error when passed a valid but non-existent article_id", () => {
         return request(app)
             .patch("/api/articles/999")
