@@ -10,6 +10,7 @@ const {
     postCommentByArticleId,
     deleteCommentById,
 } = require("./controllers/comments.controller");
+const { getUsers } = require("./controllers/users.controller");
 const express = require("express");
 const app = express();
 const endpoints = require("./endpoints.json");
@@ -32,6 +33,12 @@ app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 app.delete("/api/comments/:comment_id", deleteCommentById);
 
+app.get("/api/users", getUsers);
+
+app.all("*", (req, res) => {
+    res.status(404).send({ msg: "404: Not Found" });
+});
+
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
         res.status(400).send({ msg: "400: Bad Request" });
@@ -53,10 +60,6 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
     res.status(500).send({ msg: "Internal Server Error" });
-});
-
-app.all("*", (req, res) => {
-    res.status(404).send({ msg: "404: Not Found" });
 });
 
 module.exports = app;
