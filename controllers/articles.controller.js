@@ -3,11 +3,22 @@ const {
     selectArticleById,
     editArticleById,
 } = require("../models/articles.model");
+const { checkTopicExists } = require("../models/topics.model");
 
 exports.getArticles = (req, res, next) => {
-    selectArticles().then((articles) => {
-        res.status(200).send({ articles });
-    });
+    const { topic } = req.query;
+
+    const promises = [selectArticles(topic)];
+
+    if (topic) {
+        promises.push(checkTopicExists(topic));
+    }
+
+    Promise.all(promises)
+        .then(([articles]) => {
+            res.status(200).send({ articles });
+        })
+        .catch(next);
 };
 
 exports.getArticleById = (req, res, next) => {
