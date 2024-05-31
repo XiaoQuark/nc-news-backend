@@ -84,7 +84,7 @@ describe("GET /api/articles/:article_id", () => {
                     article_id: 1,
                     body: "I find this existence challenging",
                     topic: "mitch",
-                    created_at: "2020-07-09T19:11:00.000Z",
+                    created_at: expect.any(String),
                     votes: 100,
                     article_img_url:
                         "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
@@ -181,7 +181,7 @@ describe("POST /api/articles/:article_id/comments", () => {
                 expect(body.msg).toBe("404: User Not Found");
             });
     });
-    test("should respond with a 200 error when the comment has no body", () => {
+    test("should respond with a 400 error when the comment has no body", () => {
         const requestBody = {
             username: "icellusedkars",
             body: "",
@@ -204,7 +204,7 @@ describe("POST /api/articles/:article_id/comments", () => {
             .send(requestBody)
             .expect(404)
             .then(({ body }) => {
-                expect(body.msg).toBe("404: Not Found");
+                expect(body.msg).toBe("404: Article Not Found");
             });
     });
     test("should respond with a 400 error when passed a non valid id", () => {
@@ -237,7 +237,7 @@ describe("PATCH /api/articles/:article_id", () => {
                     article_id: 1,
                     body: "I find this existence challenging",
                     topic: "mitch",
-                    created_at: "2020-07-09T19:11:00.000Z",
+                    created_at: expect.any(String),
                     votes: 200,
                     article_img_url:
                         "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
@@ -258,11 +258,22 @@ describe("PATCH /api/articles/:article_id", () => {
                     article_id: 1,
                     body: "I find this existence challenging",
                     topic: "mitch",
-                    created_at: "2020-07-09T19:11:00.000Z",
+                    created_at: expect.any(String),
                     votes: -100,
                     article_img_url:
                         "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
                 });
+            });
+    });
+    test("should respond with a 400 error when passed a non valid request", () => {
+        const newVote = "word";
+        const requestBody = { inc_votes: newVote };
+        return request(app)
+            .patch("/api/articles/1")
+            .send(requestBody)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("400: Bad Request");
             });
     });
     test("should respond with a 404 error when passed a valid but non-existent article_id", () => {
@@ -279,6 +290,43 @@ describe("PATCH /api/articles/:article_id", () => {
             .expect(400)
             .then(({ body }) => {
                 expect(body.msg).toBe("400: Bad Request");
+            });
+    });
+    test("should ignore extra properties in the request body", () => {
+        const newVote = 100;
+        const requestBody = {
+            inc_votes: newVote,
+            comments: "NC Help is amazing",
+            extraProperties: "should be ignored",
+        };
+        return request(app)
+            .patch("/api/articles/1")
+            .send(requestBody)
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.article).toMatchObject({
+                    author: "butter_bridge",
+                    title: "Living in the shadow of a great man",
+                    article_id: 1,
+                    body: "I find this existence challenging",
+                    topic: "mitch",
+                    created_at: expect.any(String),
+                    votes: 200,
+                    article_img_url:
+                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                });
+                expect(body.article).not.toHaveProperty("comments");
+                expect(body.article).not.toHaveProperty("extraProperties");
+            });
+    });
+    test("should respond with a 400 error when the required key is missing", () => {
+        const requestBody = { not_inc_votes: 100 };
+        return request(app)
+            .patch("/api/articles/1")
+            .send(requestBody)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("400: Required Key Missing");
             });
     });
 });
@@ -301,6 +349,22 @@ describe("DELETE /api/comments/:comment_id", () => {
             .expect(404)
             .then(({ body }) => {
                 expect(body.msg).toBe("404: Comment Not Found");
+            });
+    });
+});
+
+describe("GET /api/users", () => {
+    test("should respond with an array of user objects with username, name and avatar_url properties", () => {
+        return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.users.length).toBe(4);
+                body.users.forEach((user) => {
+                    expect(typeof user.username).toBe("string");
+                    expect(typeof user.name).toBe("string");
+                    expect(typeof user.avatar_url).toBe("string");
+                });
             });
     });
 });

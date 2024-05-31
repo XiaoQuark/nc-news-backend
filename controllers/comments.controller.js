@@ -1,3 +1,5 @@
+const { checkArticleExists } = require("../models/articles.model");
+const { checkUserExists } = require("../models/users.model");
 const {
     selectCommentsByArticleId,
     insertCommentByArticleId,
@@ -17,7 +19,10 @@ exports.postCommentByArticleId = (req, res, next) => {
     const { article_id } = req.params;
     const { username, body } = req.body;
 
-    insertCommentByArticleId(article_id, username, body)
+    Promise.all([checkUserExists(username), checkArticleExists(article_id)])
+        .then(() => {
+            return insertCommentByArticleId(article_id, username, body);
+        })
         .then((comment) => {
             res.status(201).send({ comment });
         })
