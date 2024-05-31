@@ -40,7 +40,8 @@
                     "topic": "cooking",
                     "created_at": "2018-05-30T15:59:13.341Z",
                     "article_img_url": "https://www.images.com/img.jpeg",
-                    "votes": 0
+                    "votes": 0,
+                    "comment_count": 11
                 }
             ]
         }
