@@ -13,27 +13,36 @@ exports.checkArticleExists = (article_id) => {
         });
 };
 
-exports.selectArticles = () => {
-    return db
-        .query(
-            `SELECT 
-    articles.author,
-    articles.title,
-    articles.article_id,
-    articles.topic,
-    articles.created_at,
-    articles.votes,
-    articles.article_img_url,
-    COUNT(comments.comment_id)::INT AS comment_count
-FROM articles
-LEFT JOIN comments
-ON articles.article_id = comments.article_id
-GROUP BY articles.article_id
-ORDER BY articles.created_at DESC;`
-        )
-        .then(({ rows }) => {
-            return rows;
-        });
+exports.selectArticles = (topic) => {
+    let sqlQuery = `
+    SELECT 
+        articles.author,
+        articles.title,
+        articles.article_id,
+        articles.topic,
+        articles.created_at,
+        articles.votes,
+        articles.article_img_url,
+        COUNT(comments.comment_id)::INT AS comment_count
+    FROM articles
+    LEFT JOIN comments
+    ON articles.article_id = comments.article_id `;
+
+    const queryValues = [];
+
+    if (topic) {
+        sqlQuery += `WHERE topic = $1 `;
+        queryValues.push(topic);
+    }
+
+    sqlQuery += `
+        GROUP BY articles.article_id
+        ORDER BY articles.created_at DESC;
+    `;
+
+    return db.query(sqlQuery, queryValues).then(({ rows }) => {
+        return rows;
+    });
 };
 
 exports.selectArticleById = (article_id) => {
@@ -51,12 +60,6 @@ exports.selectArticleById = (article_id) => {
 };
 
 exports.editArticleById = (article_id, inc_votes) => {
-    // if (!inc_votes) {
-    //     return Promise.reject({
-    //         status: 400,
-    //         msg: "400: Required Key Missing",
-    //     });
-    // }
     return db
         .query(
             "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;",

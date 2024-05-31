@@ -70,6 +70,33 @@ describe("GET /api/articles", () => {
                 });
             });
     });
+    test("status 200: should respond with an array of articles filtered by topic", () => {
+        return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.articles).toHaveLength(12);
+                body.articles.forEach((article) => {
+                    expect(article.topic).toBe("mitch");
+                });
+            });
+    });
+    test("status 404: should respond with a 404 error when passed a non-existent topic", () => {
+        return request(app)
+            .get("/api/articles?topic=nonexistent")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("404: Topic Not Found");
+            });
+    });
+    test("status 200: should respond with an empty array when passed an existent topic that does not contain articles", () => {
+        return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.articles).toEqual([]);
+            });
+    });
 });
 
 describe("GET /api/articles/:article_id", () => {
