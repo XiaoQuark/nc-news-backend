@@ -1,19 +1,34 @@
 # Northcoders News API
 
---- 
-
-This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
+https://xqnews.onrender.com/
 
 ---
 
+## Project Summary
+
+This portfolio project was created as part of a Digital Skills Bootcamp in
+Software Engineering provided by [Northcoders](https://northcoders.com/)
+
+---
+
+## Project Setup
+
 Follow these instructions if you wish to clone the repo:
 
-## 01 Project Setup
+1.  Install npm dependencies: `npm install`
+2.  Make sure supertest and dotenv are developer dependencies
+3.  Create .env files in the main directory:
+    -   `.env.development` for development database
+    -   `.env.test` for test database
+4.  Create environment variables in respective files:
+    -   `PGDATABASE=nc_news`
+    -   `PGDATABASE=nc_news_test`
 
-1.  Install dotenv dependency with command: `npm install dotenv`
-2.  Create .env files in the main directory:
-    - `.env.development` for development database
-    - `.env.test` for test database
-3.  Create environment variables in respective files:
-    - `PGDATABASE=development_database_name`
-    - `PGDATABASE=test_database_name`
+Clear instructions of how to clone, install dependencies, seed local database,
+and run tests.
+
+The minimum versions of Node.js, and Postgres needed to run the project.
+
+-Node:21.6.2
+
+-Postgres: 8.11.5
