@@ -162,7 +162,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             .get("/api/articles/999/comments")
             .expect(404)
             .then(({ body }) => {
-                expect(body.msg).toBe("404: Not Found");
+                expect(body.msg).toBe("404: Article Not Found");
             });
     });
     test("should respond with a 400 error when passed a non valid id", () => {
