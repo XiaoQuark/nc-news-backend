@@ -13,7 +13,17 @@ exports.checkArticleExists = (article_id) => {
         });
 };
 
-exports.selectArticles = (topic) => {
+exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
+    const validSortBy = ["created_at", "comment_count", "votes"];
+    const validOrder = ["asc", "desc"];
+
+    if (!validSortBy.includes(sort_by) || !validOrder.includes(order)) {
+        return Promise.reject({
+            status: 400,
+            msg: "400: Bad Request",
+        });
+    }
+
     let sqlQuery = `
     SELECT 
         articles.author,
@@ -37,7 +47,7 @@ exports.selectArticles = (topic) => {
 
     sqlQuery += `
         GROUP BY articles.article_id
-        ORDER BY articles.created_at DESC;
+        ORDER BY ${sort_by} ${order.toUpperCase()};
     `;
 
     return db.query(sqlQuery, queryValues).then(({ rows }) => {

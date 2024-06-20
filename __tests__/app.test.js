@@ -97,6 +97,52 @@ describe("GET /api/articles", () => {
                 expect(body.articles).toEqual([]);
             });
     });
+    test("status 200: should respond with an array of articles sorted by votes descending", () => {
+        return request(app)
+            .get("/api/articles?sort_by=votes")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.articles).toBeSortedBy("votes", {
+                    descending: true,
+                });
+            });
+    });
+    test("status 200: should respond with an array of articles sorted by comment_count ascending", () => {
+        return request(app)
+            .get("/api/articles?sort_by=comment_count&order=asc")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.articles).toBeSortedBy("comment_count", {
+                    descending: false,
+                });
+            });
+    });
+    test("status 200: should respond with an array of articles sorted by created_at ascending", () => {
+        return request(app)
+            .get("/api/articles?sort_by=created_at&order=asc")
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.articles).toBeSortedBy("created_at", {
+                    descending: false,
+                });
+            });
+    });
+    test("status 400: should respond with a 400 error when passed an invalid sort_by column", () => {
+        return request(app)
+            .get("/api/articles?sort_by=invalid_column")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("400: Bad Request");
+            });
+    });
+    test("status 400: should respond with a 400 error when passed an invalid order", () => {
+        return request(app)
+            .get("/api/articles?order=invalid_order")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("400: Bad Request");
+            });
+    });
 });
 
 describe("GET /api/articles/:article_id", () => {
