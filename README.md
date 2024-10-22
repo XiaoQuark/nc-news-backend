@@ -18,11 +18,11 @@ Follow these instructions if you wish to clone the repo:
 1.  Install npm dependencies: `npm install`
 2.  Make sure supertest and dotenv are developer dependencies
 3.  Create .env files in the main directory:
-    -   `.env.development` for development database
-    -   `.env.test` for test database
+    -   development database -> `.env.development`
+    -   test database -> `.env.test`
 4.  Create environment variables in respective files:
-    -   `PGDATABASE=nc_news`
-    -   `PGDATABASE=nc_news_test`
+    -   development database -> `PGDATABASE=nc_news`
+    -   test database -> `PGDATABASE=nc_news_test`
 
 Clear instructions of how to clone, install dependencies, seed local database,
 and run tests.
