@@ -465,4 +465,12 @@ describe("GET /api/users/:username", () => {
 				expect(body.msg).toBe("404: User Not Found");
 			});
 	});
+	test("should respond with a 400 error when passed a non valid id", () => {
+		return request(app)
+			.get("/api/users/non valid username")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("400: Bad Request");
+			});
+	});
 });
