@@ -54,7 +54,7 @@ describe("GET /api/articles", () => {
 			.get("/api/articles")
 			.expect(200)
 			.then(({ body }) => {
-				expect(body.articles.length).toBe(13);
+				expect(body.articles.length).toBe(10);
 				expect(body.articles).toBeSortedBy("created_at", {
 					descending: true,
 				});
@@ -75,7 +75,7 @@ describe("GET /api/articles", () => {
 			.get("/api/articles?topic=mitch")
 			.expect(200)
 			.then(({ body }) => {
-				expect(body.articles).toHaveLength(12);
+				expect(body.articles).toHaveLength(10);
 				body.articles.forEach((article) => {
 					expect(article.topic).toBe("mitch");
 				});
