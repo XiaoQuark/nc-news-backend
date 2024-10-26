@@ -427,6 +427,103 @@ describe("DELETE /api/comments/:comment_id", () => {
 	});
 });
 
+describe("PATCH /api/comments/:comment_id", () => {
+	test("should respond with the updated comment object when the newVote amount is positive", () => {
+		const newVote = 100;
+		const requestBody = { inc_votes: newVote };
+		return request(app)
+			.patch("/api/comments/1")
+			.send(requestBody)
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.comment).toMatchObject({
+					body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+					votes: 116,
+					author: "butter_bridge",
+					article_id: 9,
+					created_at: "2020-04-06T12:17:00.000Z",
+				});
+			});
+	});
+	test("should respond with the updated comment object when the newVote amount is negative", () => {
+		const newVote = -20;
+		const requestBody = { inc_votes: newVote };
+		return request(app)
+			.patch("/api/comments/3")
+			.send(requestBody)
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.comment).toMatchObject({
+					body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+					votes: 80,
+					author: "icellusedkars",
+					article_id: 1,
+					created_at: "2020-03-01T01:13:00.000Z",
+				});
+			});
+	});
+	test("should respond with a 400 error when passed a non valid request", () => {
+		const newVote = "word";
+		const requestBody = { inc_votes: newVote };
+		return request(app)
+			.patch("/api/comments/1")
+			.send(requestBody)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("400: Bad Request");
+			});
+	});
+	test("should respond with a 404 error when passed a valid but non-existent comment_id", () => {
+		return request(app)
+			.patch("/api/comments/999")
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("404: Not Found");
+			});
+	});
+	test("should respond with a 400 error when passed a non valid comment_id", () => {
+		return request(app)
+			.patch("/api/comments/not-an-id")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("400: Bad Request");
+			});
+	});
+	test("should ignore extra properties in the request body", () => {
+		const newVote = 100;
+		const requestBody = {
+			inc_votes: newVote,
+			comments: "NC Help is amazing",
+			extraProperties: "should be ignored",
+		};
+		return request(app)
+			.patch("/api/comments/1")
+			.send(requestBody)
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.comment).toMatchObject({
+					body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+					votes: 116,
+					author: "butter_bridge",
+					article_id: 9,
+					created_at: "2020-04-06T12:17:00.000Z",
+				});
+				expect(body.comment).not.toHaveProperty("comments");
+				expect(body.comment).not.toHaveProperty("extraProperties");
+			});
+	});
+	test("should respond with a 400 error when the required key is missing", () => {
+		const requestBody = { not_inc_votes: 100 };
+		return request(app)
+			.patch("/api/comments/1")
+			.send(requestBody)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("400: Required Key Missing");
+			});
+	});
+});
+
 describe("GET /api/users", () => {
 	test("should respond with an array of user objects with username, name and avatar_url properties", () => {
 		return request(app)
