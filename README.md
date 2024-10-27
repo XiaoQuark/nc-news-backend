@@ -1,34 +1,69 @@
-# Northcoders News API
+# **NC News Backend**
 
-https://xqnews.onrender.com/
+NC News is a RESTful API that powers a news site for articles, topics, comments, and users, built with **Node.js**, **Express**, and **PostgreSQL**. For the connected frontend, visit this repository: [XQ News Frontend](https://github.com/XiaoQuark/nc-news-frontend).
 
----
+## **Hosted Version**
 
-## Project Summary
+The hosted version of the API can be found [here](https://xqnews.onrender.com/api).
 
-This portfolio project was created as part of a Digital Skills Bootcamp in
-Software Engineering provided by [Northcoders](https://northcoders.com/)
+## **Getting Started**
 
----
+To set up this project locally, follow these steps:
 
-## Project Setup
+### **Install Dependencies**
 
-Follow these instructions if you wish to clone the repo:
+Run the following command to install dependencies:
 
-1.  Install npm dependencies: `npm install`
-2.  Make sure supertest and dotenv are developer dependencies
-3.  Create .env files in the main directory:
-    -   development database -> `.env.development`
-    -   test database -> `.env.test`
-4.  Create environment variables in respective files:
-    -   development database -> `PGDATABASE=nc_news`
-    -   test database -> `PGDATABASE=nc_news_test`
+```
+npm install
+```
 
-Clear instructions of how to clone, install dependencies, seed local database,
-and run tests.
+### **Environment Setup**
 
-The minimum versions of Node.js, and Postgres needed to run the project.
+Create two files, `**.env.development**` and `**.env.test**`, in the root directory:
 
--Node:21.6.2
+-   **.env.development**:
 
--Postgres: 8.11.5
+    ```
+    PGDATABASE=nc_news
+    ```
+
+-   **.env.test**:
+
+    ```
+    PGDATABASE=nc_news_test
+    ```
+
+These files are required to configure the database connections.
+
+### **Set Up and Seed Database**
+
+To create and seed the local database, run:
+
+```
+npm run setup-dbs && npm run seed
+```
+
+### **Running Tests**
+
+To run the tests, use:
+
+```
+npm test
+```
+
+You can also run specific tests:
+
+-   **API Tests**: `npm test app`
+
+-   **Utility Tests**: `npm test utils`
+
+## **Requirements**
+
+-   **Node.js**: v21.6.2 or higher
+
+-   **PostgreSQL**: v14.11 or higher
+
+## **Notes**
+
+This API was built as part of a software engineering bootcamp with Northcoders.
