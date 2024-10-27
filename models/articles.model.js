@@ -13,9 +13,19 @@ exports.checkArticleExists = (article_id) => {
 		});
 };
 
-exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
-	const validSortBy = ["created_at", "comment_count", "votes"];
+exports.selectArticles = (
+	topic,
+	sort_by = "created_at",
+	order = "desc",
+	p,
+	limit
+) => {
+	const validSortBy = ["created_at", "comment_count", "votes", "article_id"];
 	const validOrder = ["asc", "desc"];
+	console.log(p, "p");
+	console.log(limit, "limit");
+	const currentPage = p || 1;
+	const rowLimit = limit || 10;
 
 	if (!validSortBy.includes(sort_by) || !validOrder.includes(order)) {
 		return Promise.reject({
@@ -41,15 +51,17 @@ exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
 	const queryValues = [];
 
 	if (topic) {
-		sqlQuery += `WHERE topic = $1 `;
+		sqlQuery += `WHERE topic = $3 `;
 		queryValues.push(topic);
 	}
-
+	console.log(currentPage, "p assigned");
+	console.log(rowLimit, "limit assigned");
 	sqlQuery += `
         GROUP BY articles.article_id
         ORDER BY ${sort_by} ${order.toUpperCase()}
-        FETCH FIRST 10 ROW ONLY;
+        OFFSET (($1 - 1) * $2) ROWS FETCH NEXT $2 ROW ONLY;
     `;
+	queryValues.unshift(currentPage, rowLimit);
 
 	return db.query(sqlQuery, queryValues).then(({ rows }) => {
 		return rows;

@@ -70,6 +70,21 @@ describe("GET /api/articles", () => {
 				});
 			});
 	});
+
+	test("status 200: should respond with an array of articles objects starting from specified page", () => {
+		return request(app)
+			.get("/api/articles?sort_by=article_id&order=asc&p=2&limit=5")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles[0].article_id).toBe(6);
+				expect(body.articles[1].article_id).toBe(7);
+				expect(body.articles[2].article_id).toBe(8);
+				expect(body.articles[3].article_id).toBe(9);
+				expect(body.articles[4].article_id).toBe(10);
+				expect(body.articles).toHaveLength(5);
+			});
+	});
+
 	test("status 200: should respond with an array of articles filtered by topic", () => {
 		return request(app)
 			.get("/api/articles?topic=mitch")
