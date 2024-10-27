@@ -22,8 +22,6 @@ exports.selectArticles = (
 ) => {
 	const validSortBy = ["created_at", "comment_count", "votes", "article_id"];
 	const validOrder = ["asc", "desc"];
-	console.log(p, "p");
-	console.log(limit, "limit");
 	const currentPage = p || 1;
 	const rowLimit = limit || 10;
 
@@ -54,8 +52,7 @@ exports.selectArticles = (
 		sqlQuery += `WHERE topic = $3 `;
 		queryValues.push(topic);
 	}
-	console.log(currentPage, "p assigned");
-	console.log(rowLimit, "limit assigned");
+
 	sqlQuery += `
         GROUP BY articles.article_id
         ORDER BY ${sort_by} ${order.toUpperCase()}

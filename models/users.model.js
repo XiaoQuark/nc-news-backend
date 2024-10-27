@@ -6,6 +6,9 @@ exports.selectUsers = () => {
 		.query("SELECT username, name, avatar_url FROM users")
 		.then(({ rows }) => {
 			return rows;
+		})
+		.catch((err) => {
+			throw err; // Ensures the error is propagated
 		});
 };
 

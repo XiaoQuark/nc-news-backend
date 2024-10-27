@@ -94,6 +94,18 @@ describe("GET /api/articles", () => {
 			});
 	});
 
+	test("status 200: should respond with an array of articles objects starting from specified page", () => {
+		return request(app)
+			.get("/api/articles?topic=mitch&p=2&limit=10")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toHaveLength(2);
+				body.articles.forEach((article) => {
+					expect(article.topic).toBe("mitch");
+				});
+			});
+	});
+
 	test("status 200: should respond with an array of articles filtered by topic", () => {
 		return request(app)
 			.get("/api/articles?topic=mitch")
